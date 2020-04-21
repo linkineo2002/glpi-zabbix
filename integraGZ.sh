@@ -1230,7 +1230,7 @@ DB_CREATE ()
 		echo "Criando banco de dados zabbix..."
 		sleep 1
 
-		mysql -e "create database zabbix character set utf8";
+		mysql -e "create database zabbix character set utf8 collate utf8_bin";
 		[ $? -ne 0 ] && erroDetect
 		
 		echo "Criando usuário do zabbix no MariaDB SGBD..."
@@ -1352,7 +1352,7 @@ sleep 3
 	# Apps structure inventory
 	glpiPluginAppStructureInventory="https://github.com/ericferon/glpi-archisw/archive/v2.1.4.zip"
 	wget -qO- $glpiPluginAppStructureInventory | bsdtar -xvf-;
-	mv g-archisw-2.1.4 $GLPI_PLUGINS_DIR/archisw; [ $? -ne 0 ] && erroDetect
+	mv glpi-archisw-2.1.4 $GLPI_PLUGINS_DIR/archisw; [ $? -ne 0 ] && erroDetect
 
 	# Plugin Form Creator
 	glpiPluginFormcreator="https://github.com/pluginsGLPI/formcreator/releases/download/v2.9.1/glpi-formcreator-2.9.1.tar.bz2"
