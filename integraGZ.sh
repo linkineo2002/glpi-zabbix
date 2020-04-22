@@ -1,12 +1,36 @@
 #!/bin/bash
+# -------------------------------------------------------------------------
+# @Programa 
+# 	@name: integraGZ.sh
+#	@versao: 3.0.0
+#	@Data 16 de Julho de 2018
+#	@Copyright: Verdanatech Soluções em TI, 2016 - 2018
+#	@Copyright: Pillares Consulting, 2016
+# --------------------------------------------------------------------------
+# LICENSE
+#
+# integraGZ.sh is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# integraGZ.sh is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# If not, see <http://www.gnu.org/licenses/>.
+# --------------------------------------------------------------------------
+ 
 #
 # Variables Declaration
 #
 
-versionDate="Apr 20, 2020"
-TITULO="Linki Zero - v.3.0.0"
+versionDate="Jul 16, 2018"
+TITULO="Verdanatech iGZ - v.3.0.0"
+BANNER="http://www.verdanatech.com"
 
-devMail="fabio1987ss@gmail.com"
+devMail="halexsandro.sales@verdanatech.com"
 
 # Discovery the system version and instanciate variables
 source /etc/os-release
@@ -14,7 +38,7 @@ source /etc/os-release
 serverAddress=$(hostname -I | cut -d' ' -f1)
 
 glpiVersion="GLPI 9.4.5"
-zabbixVersion="Zabbix 4.4.7"
+zabbixVersion="Zabbix 4.4.1"
 
 verdanatechGIT="https://github.com/verdanatech/igz"
 
@@ -32,7 +56,7 @@ GLPI_DIR="/var/www/html/glpi"
 GLPI_PLUGINS_DIR=$GLPI_DIR/plugins
 
 # Zabbix link
-zabbixDownloadLink="https://ufpr.dl.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/4.4.7/zabbix-4.4.7.tar.gz"
+zabbixDownloadLink="https://ufpr.dl.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/4.4.1/zabbix-4.4.1.tar.gz"
 
 # GLPi link
 glpiDownloadLink="https://github.com/glpi-project/glpi/releases/download/9.4.5/glpi-9.4.5.tgz"
@@ -44,16 +68,25 @@ function erroDetect(){
 	echo -e "
 \033[31m
  ----------------------------------------------------------- 
-#                    ERRO DETECTADO!!                       #
+#                    ERRO DETECTED!!!                       #
  -----------------------------------------------------------\033[0m
-  Ocorreu um erro.
-  Foi encontrado um erro no instalador e o processo foi
-  interrompido.
-  
-  \033[1m Descrição de erro:\033[0m
+  There was an error.
+  An error was encountered in the installer and the process 
+  was aborted.
+  - - -
+  \033[1m Error Description:\033[0m
  
   *\033[31m $erroDescription \033[0m
-      
+  - - -
+  
+  \033[1mFor commercial support contact us:\033[0m 
+  
+  +55 81 3091 42 52
+  $comercialMail
+  $devMail 
+  
+ ----------------------------------------------------------
+  \033[32mVerdanatech Solucoes em TI - http://www.verdanatech.com\033[0m 
  ----------------------------------------------------------"
 
 		kill $$
@@ -61,18 +94,23 @@ function erroDetect(){
 }
 
 # Discovery the system version and instanciate variables
-erroDescription="Impossível determinar o sistema operacional"
+erroDescription="Impossible to determine the Operating System"
 source /etc/os-release; [ $? -ne 0 ] && erroDetect
 
 # Define variables by OS
 case $ID in 
-		ubuntu)
+		debian)
 			apacheUser=www-data
 		;;
 		
 		centos)
 			apacheUser=apache
 		;;
+
+		ubuntu)
+			apacheUser=www-data
+		;;
+
 	esac
 
 #
@@ -86,29 +124,29 @@ REQ_TO_USE ()
 	clear
 
 	# Test if the systen has which package
-	erroDescription="O pacote whiptail é necessário para executar o integraGZ.sh"
+	erroDescription="The whiptail package is required to run the integraGZ.sh"
 	which whiptail; [ $? -ne 0 ] && erroDetect
 
 	# Test if the user is root
-	erroDescription="É necessário privilégio de administrador do sistema"
+	erroDescription="System administrator privilege is required"
 	[ $UID -ne 0 ] && erroDetect
 
 
-erroDescription="Sistema operacional não suportado."	
+erroDescription="Operating system not supported."	
 case $ID in
 	
-	debian)
+	ubuntu)
 	
 	case $VERSION_ID in
 		
 		9)
 		
-			whiptail --title "${TITULO}" --yesno "Sistema GNU/Linux Debian $VERSION_ID foi detectado. Estamos certos?" --yes-button "Sim" --no-button "Não" --fb 10 50
+			whiptail --title "${TITULO}" --backtitle "${BANNER}" --yesno "System GNU/Linux Debian $VERSION_ID was detected. Are we correct?. " --yes-button "Yes" --no-button "No" --fb 10 50
 			
 			if [ $? -eq 1 ]
 			then
 				
-				whiptail --title "${TITULO}" --msgbox "Pedimos desculpas!\nEste script foi desenvolvido para:\nCentOS 7, Debian 9, Ubuntu 18.04.\n" --fb 15 50
+				whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "We apologize!\nThis script was developed for:\nCentOS 7, Debian 9.\nWe will close the running now." --fb 15 50
 				kill $$
 				
 			fi
@@ -125,12 +163,12 @@ case $ID in
 		
 		7)
 		
-			whiptail --title "${TITULO}" --yesno "Sistema GNU/Linux Centos $VERSION_ID foi detectado. Estamos certos?" --yes-button "Sim" --no-button "Não" --fb 10 50
+			whiptail --title "${TITULO}" --backtitle "${BANNER}" --yesno "System GNU/Linux Centos $VERSION_ID was detected. Are we correct?. " --yes-button "Yes" --no-button "No" --fb 10 50
 			
 			if [ $? -eq 1 ]
 			then
 				
-				whiptail --title "${TITULO}" --msgbox "Pedimos desculpas!\nEste script foi desenvolvido para:\nCentOS 7, Debian 9, Ubuntu 18.04.\n" --fb 15 50
+				whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "We apologize!\nThis script was developed for:\nCentOS 7, Debian 9.\nWe will close the running now." --fb 15 50
 				kill $$
 				
 			fi
@@ -142,17 +180,17 @@ case $ID in
 	;;
 	
 	ubuntu)
-	
+
 	case $VERSION_ID in
 		
 		18.04)
 		
-			whiptail --title "${TITULO}" --yesno "Sistema GNU/Linux Ubuntu $VERSION_ID foi detectado. Estamos certos?" --yes-button "Sim" --no-button "Não" --fb 10 50                                                                                                                                      
-
+			whiptail --title "${TITULO}" --backtitle "${BANNER}" --yesno "System GNU/Linux Ubuntu $VERSION_ID was detected. Are we correct?. " --yes-button "Yes" --no-button "No" --fb 10 50
+			
 			if [ $? -eq 1 ]
-                        then
+			then
 				
-				whiptail --title "${TITULO}" --msgbox "Pedimos desculpas!\nEste script foi desenvolvido para:\nCentOS 7, Debian 9, Ubuntu 18.04.\n" --fb 15 50
+				whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "We apologize!\nThis script was developed for:\nCentOS 7, Debian 9 and Ubuntu 16.04.\nWe will close the running now." --fb 15 50
 				kill $$
 				
 			fi
@@ -178,7 +216,7 @@ SET_REPOS ()
 
 	clear 
 	
-	echo "Adicionando repositórios e atualizando o sistema..."
+	echo "Adding repositories, updating and upgrading the system..."
 	
 	sleep 1
 	
@@ -221,26 +259,24 @@ SET_REPOS ()
 			
 			;;
 
-                ubuntu)
+		ubuntu)
 
-                        case $VERSION_ID in
+			case $VERSION_ID in
+                              18.4)
 
-	                                9)
-
-					echo "deb http://ch.archive.ubuntu.com/ubuntu/ saucy main restricted" > /etc/apt/sources.list
-					echo "deb http://us.archive.ubuntu.com/ubuntu/ saucy universe" >> /etc/apt/sources.list
-					echo "deb http://us.archive.ubuntu.com/ubuntu/ saucy-updates universe" >> /etc/apt/sources.list
-
-					apt-get update
-					apt-get upgrade -y
-																		clear
-
-															                                ;;
-
-																                        esac
-
-																                        ;;			
+				      echo "deb http://ch.archive.ubuntu.com/ubuntu/ saucy main restricted" > /etc/apt/sources.list
+				      echo "deb http://us.archive.ubuntu.com/ubuntu/ saucy universe" >> /etc/apt/sources.list
+				      echo "deb http://us.archive.ubuntu.com/ubuntu/ saucy-updates universe" >> /etc/apt/sources.list
+				      
+				      apt-get update
+				      apt-get upgrade -y
+				      clear
 		
+				;;
+		
+			esac
+			
+			;;																																																																											
 	esac	
 }
 
@@ -256,7 +292,7 @@ LAMP_INSTALL ()
 				9)
 				
 					clear
-					echo "Instalando pacotes Debian para GLPI ..."
+					echo "Intalling Debian packages for GLPI..."
 					sleep 1
 					apt-get -y install apache2 bsdtar bzip2 curl libapache2-mod-php7.0 libmariadbd-dev libmariadbd18 mariadb-server openjdk-8-jdk php-soap php-cas php7.0 php7.0-apcu php7.0-cli php7.0-common php7.0-curl php7.0-gd php7.0-imap php7.0-ldap php7.0-mysql php7.0-snmp php7.0-xmlrpc php7.0-xml php7.0-mbstring php7.0-bcmath
 				;;	
@@ -271,7 +307,7 @@ LAMP_INSTALL ()
 				18.04)
 				
 					clear
-					echo "Instalando pacotes Ubuntu para GLPI ..."
+					echo "Intalling Debian packages for GLPI..."
 					sleep 1
 					apt-get -y install apache2 bsdtar bzip2 curl libapache2-mod-php7.0 libmariadbd-dev libmariadbd18 mariadb-server openjdk-8-jdk php-soap php7.0 php-apcu php7.0-cli php7.0-common php7.0-curl php7.0-gd php7.0-imap php7.0-ldap php7.0-mysql php7.0-snmp php7.0-xmlrpc php7.0-xml php7.0-mbstring php7.0-bcmath
 				;;	
@@ -286,7 +322,7 @@ LAMP_INSTALL ()
 				7)
 				
 					clear
-					echo "Instalando pacotes CentOS para GLPI ..."
+					echo "Intalling CentOS packages for GLPI..."
 					sleep 1
 					yum -y install bsdtar git httpd httpd-devel mariadb-devel mariadb-server php php-cas php-apcu php-bcmath php-cli php-common php-gd php-imap php-ldap php-mbstring php-mysql php-opcache php-pdo php-xmlreader php-xmlrpc php-xmlwriter wget
 					
@@ -324,15 +360,15 @@ SET_TIME_ZONE ()
 # Ref: http://php.net/manual/pt_BR/timezones.php
 # 
 
-whiptail --title "${TITULO}" --msgbox "
-Agora configuramos o fuso horário dos servidores. Selecione o fuso horário que melhor atenda!" \
+whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "
+Now we configure the servers timezone. Select the timezone that best meets!" \
 --fb 10 50
 
 while [ -z $timePart1 ]
 do
 
-timePart1=$(whiptail --title "${TITULO}" --radiolist \
-"Selecione o fuso horário para o seu servidor!" 20 60 10 \
+timePart1=$(whiptail --title "${TITULO}" --backtitle "${BANNER}" --radiolist \
+"Select the timezone for your Server!" 20 60 10 \
 	"Africa" "" OFF \
 	"America" "" OFF \
 	"Antarctica" "" OFF \
@@ -351,8 +387,8 @@ case $timePart1 in
 	Africa)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Abidjan" "" OFF \
 			"Accra" "" OFF \
 			"Addis_Ababa" "" OFF \
@@ -411,8 +447,8 @@ case $timePart1 in
 	America)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Adak" "" OFF \
 			"Anchorage" "" OFF \
 			"Anguilla" "" OFF \
@@ -584,8 +620,8 @@ case $timePart1 in
 	Antarctica)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Casey" "" OFF \
 			"Davis" "" OFF \
 			"DumontDUrville" "" OFF \
@@ -605,8 +641,8 @@ case $timePart1 in
 	while [ -z $timePart2 ]
 	do
 
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Longyearbyen" "" OFF    3>&1 1>&2 2>&3)
 	done
 	;;
@@ -614,8 +650,8 @@ case $timePart1 in
 	Asia)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Aden" "" OFF \
 			"Almaty" "" OFF \
 			"Amman" "" OFF \
@@ -714,8 +750,8 @@ case $timePart1 in
 	Atlantic)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Azores" "" OFF \
 			"Bermuda" "" OFF \
 			"Canary" "" OFF \
@@ -734,8 +770,8 @@ case $timePart1 in
 	Australia)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"ACT" "" OFF \
 			"Adelaide" "" OFF \
 			"Brisbane" "" OFF \
@@ -765,8 +801,8 @@ case $timePart1 in
 	Europe)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Amsterdam" "" OFF \
 			"Andorra" "" OFF \
 			"Athens" "" OFF \
@@ -832,8 +868,8 @@ case $timePart1 in
 	Indian)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Antananarivo" "" OFF \
 			"Chagos" "" OFF \
 			"Christmas" "" OFF \
@@ -851,8 +887,8 @@ case $timePart1 in
 	Pacific)
 	while [ -z $timePart2 ]
 	do
-		timePart2=$(whiptail --title  "${TITULO}" --radiolist \
-		"Selecione o fuso horário para o seu servidor!" 20 50 12 \
+		timePart2=$(whiptail --title  "${TITULO}" --backtitle "${BANNER}" --radiolist \
+		"Select the timezone for your Server!" 20 50 12 \
 			"Apia" "" OFF \
 			"Auckland" "" OFF \
 			"Bougainville" "" OFF \
@@ -898,6 +934,7 @@ case $timePart1 in
 			"Yap" "" OFF      3>&1 1>&2 2>&3)
 	done
 	;;
+	
 esac
 
 }
@@ -917,16 +954,16 @@ ZABBIX_INSTALL ()
 			case $VERSION_ID in
 								
 				9)
-					erroDescription="Erro de instalação do pacote Zabbix"
+					erroDescription="Package installation error"
 					
 					clear
-					echo "Instalando pacotes Debian para Zabbix ...."
+					echo "Intalling Debian packages for Zabbix..."
 					sleep 1
 					apt-get -y install sudo git python-pip libxml2 libxml2-dev curl fping libcurl3 libevent-dev libpcre3-dev libcurl3-gnutls libcurl3-gnutls-dev libcurl4-gnutls-dev build-essential libssh2-1-dev libssh2-1 libiksemel-dev libiksemel-utils libiksemel3 fping libopenipmi-dev snmp snmp-mibs-downloader libsnmp-dev libmariadbd18 libmariadbd-dev snmpd ttf-dejavu-core libltdl7 libodbc1 libgnutls28-dev libldap2-dev openjdk-8-jdk unixodbc-dev mariadb-server
 
 					[ $? -ne 0 ] && erroDetect
 					
-					erroDescription="Erro de instalação do pacote da API do Zabbix"
+					erroDescription="Zabbix API Package installation error"
 					
 					pip install zabbix-api
 					[ $? -ne 0 ] && erroDetect
@@ -940,18 +977,11 @@ ZABBIX_INSTALL ()
 			case $VERSION_ID in
 								
 				18.04)
-					erroDescription="Erro de instalação do pacote Zabbix"
-
 					clear
-					echo "Instalando pacotes Ubuntu para Zabbix ..."
+					echo "Intalling Ubuntu packages for Zabbix..."
 					sleep 1
-					apt-get -y install sudo git python-pip libmysqlclient-dev libxml2 libxml2-dev curl fping libcurl4 libevent-dev libpcre3-dev libcurl3-gnutls libcurl4-gnutls-dev build-essential libssh2-1-dev libssh2-1 libiksemel-dev libiksemel-utils libiksemel3 fping libopenipmi-dev snmp snmp-mibs-downloader libsnmp-dev libmariadbd18 snmpd ttf-dejavu-core libltdl7 libodbc1 libgnutls28-dev libldap2-dev openjdk-8-jdk unixodbc-dev mariadb-server
-
-                                        [ $? -ne 0 ] && erroDetect
-
-                                        erroDescription="Erro de instalação do pacote da API do Zabbix"                                                                 
-                                        pip install zabbix-api
-                                        [ $? -ne 0 ] && erroDetect
+					apt-get -y install sudo git python-pip libmysqlclient-dev libxml2 libxml2-dev curl fping libcurl3 libevent-dev libpcre3-dev libcurl3-gnutls libcurl3-gnutls-dev libcurl4-gnutls-dev build-essential libssh2-1-dev libssh2-1 libiksemel-dev libiksemel-utils libiksemel3 fping libopenipmi-dev snmp snmp-mibs-downloader libsnmp-dev libmariadbd18 libmariadbd-dev snmpd ttf-dejavu-core libltdl7 libodbc1 libgnutls28-dev libldap2-dev openjdk-8-jdk unixodbc-dev mariadb-server zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-agent
+					pip install zabbix-api
 				;;
 				
 			esac
@@ -962,17 +992,17 @@ ZABBIX_INSTALL ()
 			case $VERSION_ID in
 				
 				7)
-					erroDescription="Erro de instalação do pacote Zabbix"
+					erroDescription="Package installation error"
 					
 					clear
-					echo "Intalando pacotes CentOS 7 para Zabbix..."
+					echo "Intalling CentOS 7 packages for Zabbix..."
 					sleep 1
 
 					yum -y install gcc python2-pip net-snmp net-snmp-devel net-snmp-utils net-snmp-libs iksemel-devel zlib-devel glibc-devel curl-devel automake libidn-devel openssl-devel rpm-devel OpenIPMI-devel libssh2-devel make fping libxml2-devel unixODBC unixODBC-devel
 					
 					[ $? -ne 0 ] && erroDetect
 					
-					erroDescription="Erro de instalação do pacote da API do Zabbix"
+					erroDescription="Zabbix API Package installation error"
 					
 					pip install zabbix-api
 					[ $? -ne 0 ] && erroDetect
@@ -984,7 +1014,7 @@ ZABBIX_INSTALL ()
 		
 	esac
 	
-	echo "Executando e compilando zabbix ..."
+	echo "Executing and compilling zabbix..."
 	sleep 1
 
 	## Zabbix install process
@@ -1002,17 +1032,17 @@ ZABBIX_INSTALL ()
 	rm zabbix* -Rf
 	
 	# Getting zabbix
-	erroDescription="Erro ao baixar o zabbix"
+	erroDescription="Error downloading zabbix"
 	wget -qO- $zabbixDownloadLink | tar -zxv
 	[ $? -ne 0 ] && erroDetect
 	
 	cd $(ls -g | grep zabbix- | grep ^d | rev | cut -d" " -f1 | rev)
 
-	erroDescription="Erro ao configurar o pacote zabbix"
-	./configure --enable-server --enable-agent --with-mysql --with-net-snmp --with-libcurl --with-ldap --with-iconv --with-libxml2 --with-ssh2 --with-iconv --with-gnutls --with-unixodbc --with-openipmi --with-jabber=/usr --enable-ipv6 --prefix=/usr/local/zabbix
+	erroDescription="Error to configure zabbix package"
+	./configure --enable-server --enable-agent --with-mysql --with-net-snmp --with-libcurl --with-libxml2 --with-ssh2 --with-ldap --with-iconv --with-gnutls --with-unixodbc --with-openipmi --with-jabber=/usr --enable-ipv6 --prefix=/usr/local/zabbix
 	[ $? -ne 0 ] && erroDetect
 	
-	erroDescription="Erro ao criar pacote binário"
+	erroDescription="Error creating binary package"
 	make install
 	[ $? -ne 0 ] && erroDetect
 	
@@ -1115,6 +1145,9 @@ ZABBIX_INSTALL ()
 
 				systemctl start zabbix_server
 				systemctl start zabbix_agentd
+
+			;;
+
 	esac
 
 	# Preparando o zabbix frontend
@@ -1131,10 +1164,11 @@ ZABBIX_INSTALL ()
 			echo -e "# Define /zabbix alias, this is the default\n#Created by Verdanatech integraGZ.sh\n<IfModule mod_alias.c>\n    Alias /zabbix /var/www/html/zabbix\n</IfModule>\n\n<Directory \"/var/www/html/zabbix\">\n\tOptions FollowSymLinks\n\tAllowOverride None\n\tOrder allow,deny\n\tAllow from all\n\n\tphp_value max_execution_time 300\n\tphp_value memory_limit 128M\n\tphp_value post_max_size 16M\n\tphp_value upload_max_filesize 2M\n\tphp_value max_input_time 300\n\tphp_value date.timezone $timePart1/$timePart2\n\tphp_value always_populate_raw_post_data -1\n</Directory>\n\n<Directory \"/var/www/html/zabbix/conf\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/api\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/include\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/include/classes\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n" > /etc/httpd/conf.d/zabbix.conf
 			
 		;;
-
-               	ubuntu)
-	                        echo -e "# Define /zabbix alias, this is the default\n#Created by Verdanatech integraGZ.sh\n<IfModule mod_alias.c>\n    Alias /zabbix /var/www/html/zabbix\n</IfModule>\n\n<Directory \"/var/www/html/zabbix\">\n\tOptions FollowSymLinks\n\tAllowOverride None\n\tOrder allow,deny\n\tAllow from all\n\n\tphp_value max_execution_time 300\n\tphp_value memory_limit 128M\n\tphp_value post_max_size 16M\n\tphp_value upload_max_filesize 2M\n\tphp_value max_input_time 300\n\tphp_value date.timezone $timePart1/$timePart2\n\tphp_value always_populate_raw_post_data -1\n</Directory>\n\n<Directory \"/var/www/html/zabbix/conf\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/api\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/include\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/include/classes\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n" > /etc/apache2/conf-available/zabbix.conf
-		 ;;		
+                
+		ubuntu)
+			echo -e "# Define /zabbix alias, this is the default\n#Created by Verdanatech integraGZ.sh\n<IfModule mod_alias.c>\n    Alias /zabbix /var/www/html/zabbix\n</IfModule>\n\n<Directory \"/var/www/html/zabbix\">\n\tOptions FollowSymLinks\n\tAllowOverride None\n\tOrder allow,deny\n\tAllow from all\n\n\tphp_value max_execution_time 300\n\tphp_value memory_limit 128M\n\tphp_value post_max_size 16M\n\tphp_value upload_max_filesize 2M\n\tphp_value max_input_time 300\n\tphp_value date.timezone $timePart1/$timePart2\n\tphp_value always_populate_raw_post_data -1\n</Directory>\n\n<Directory \"/var/www/html/zabbix/conf\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/api\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/include\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n\n<Directory \"/var/www/html/zabbix/include/classes\">\n\tOrder deny,allow\n\tDeny from all\n\t<files *.php>\n\t\tOrder deny,allow\n\t\tDeny from all\n\t</files>\n</Directory>\n" > /etc/apache2/conf-available/zabbix.conf
+	
+		;;		
 	esac
 			
 	# Set correct permissions to System resources
@@ -1162,8 +1196,9 @@ ZABBIX_INSTALL ()
 			chown $apacheUser:$apacheUser /var/www/html/zabbix -Rf
 			systemctl restart httpd.service
 		;;
+		
 
-                ubuntu)
+               ubuntu)
 			
 			# Enabling zabbix confgurations site
 			a2enconf zabbix
@@ -1172,8 +1207,6 @@ ZABBIX_INSTALL ()
 			chown $apacheUser:$apacheUser /var/www/html/zabbix -Rf
 			systemctl reload apache2
 		;;
-
-
 	esac	
 
 }
@@ -1183,25 +1216,25 @@ DB_CREATE ()
 
 	clear 
 	
-	echo "Criando SQL ..."
-	echo "Criando banco de dados para sistemas .."
+	echo "Making SQL ..."
+	echo "Creating Data Base for systems.."
 	echo ""
 	sleep 2
 	
-	erroDescription="Executável MySQL não encontrado"
+	erroDescription="MySQL executable not found"
 	which mysql; [ $? -ne 0 ] && erroDetect
 	
 	test_connection=1
 	
 	while [ $test_connection != 0 ]
 	do
-		mysql -e "" 2> /dev/null
+		mysql -uroot $(if test $rootPWD_SQL ; then -p$rootPWD_SQL; fi) -e "" 2> /dev/null
 		test_connection=$?
 
 		if [ $test_connection != 0 ]
 		then
-			rootPWD_SQL=$(whiptail --title "${TITULO}" --passwordbox "Digite a senha do usuário root para o SQL Server" --fb 10 50 3>&1 1>&2 2>&3)
-			mysql -e "" 2> /dev/null
+			rootPWD_SQL=$(whiptail --title "${TITULO}" --backtitle "${BANNER}" --passwordbox "Enter the root user password for the SQL Server" --fb 10 50 3>&1 1>&2 2>&3)
+			mysql -uroot $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) -e "" 2> /dev/null
 			test_connection=$?	
 		fi
 		
@@ -1214,35 +1247,35 @@ DB_CREATE ()
 	
 		while [ $zabbixPWD_SQL1 != $zabbixPWD_SQL2 ]
 		do
-			zabbixPWD_SQL1=$(whiptail --title "${TITULO}" --passwordbox "Digite a senha do usuário zabbix no banco de dados zabbix." --fb 10 60 3>&1 1>&2 2>&3) 
-			zabbixPWD_SQL2=$(whiptail --title "${TITULO}" --passwordbox "Digite a senha do usuário zabbix no banco de dados zabbix." --fb 10 50 3>&1 1>&2 2>&3)
+			zabbixPWD_SQL1=$(whiptail --title "${TITULO}" --backtitle "${BANNER}" --passwordbox "Enter the user's password zabbix to the zabbix Database." --fb 10 60 3>&1 1>&2 2>&3) 
+			zabbixPWD_SQL2=$(whiptail --title "${TITULO}" --backtitle "${BANNER}" --passwordbox "Confirm zabbix user password." --fb 10 50 3>&1 1>&2 2>&3)
 		
 			if [ $zabbixPWD_SQL1 != $zabbixPWD_SQL2 ]
 			then
-				whiptail --title "${TITULO}" --msgbox "
-					Erro! Senhas informadas não coincidem. Tente novamente.
+				whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "
+					Error! Informed passwords do not match. Try again.
 				" --fb 0 0 0
 			fi
 		done
 	
 		# Criando a base de dados zabbix
-		erroDescription="Erro ao manipular o banco de dados MySQL para Zabbix"
-		echo "Criando banco de dados zabbix..."
+		erroDescription="Error handling MySQL to Zabbix Database"
+		echo "Creating zabbix database..."
 		sleep 1
 
-		mysql -e "create database zabbix character set utf8 collate utf8_bin";
+		mysql -u root $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) -e "create database zabbix character set utf8 collate utf8_bin;";
 		[ $? -ne 0 ] && erroDetect
 		
-		echo "Criando usuário do zabbix no MariaDB SGBD..."
+		echo "Creating zabbix user at MariaDB SGBD..."
 		sleep 1
 
-		mysql -e "create user 'zabbix'@'localhost' identified by '$zabbixPWD_SQL1'";
+		mysql -u root $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) -e "create user 'zabbix'@'localhost' identified by '$zabbixPWD_SQL1'";
 		[ $? -ne 0 ] && erroDetect
 		
-		echo "Fazendo do usuário zabbix o proprietário do banco de dados zabbix ..."
+		echo "Making zabbix user the owner to zabbix database..."
 		sleep 1
 
-		mysql -e "grant all privileges on zabbix.* to 'zabbix'@'localhost' with grant option";
+		mysql -u root $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) -e "grant all privileges on zabbix.* to 'zabbix'@'localhost' with grant option";
 		[ $? -ne 0 ] && erroDetect
 		
 		# Configurando /etc/zabbix/zabbix_server.conf
@@ -1252,19 +1285,19 @@ DB_CREATE ()
 	
 		# Avisar que a base está sendo populada....
 		# Popular base zabbix
-		erroDescription="Erro de população do MySQL"
+		erroDescription="MySQL population error"
 		
-		echo "Criando o esquema do Zabbix no MariaDB ..."
-		mysql zabbix < database/mysql/schema.sql
+		echo "Creating Zabbix Schema at MariaDB..."
+		mysql -uroot $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) zabbix < database/mysql/schema.sql
 		[ $? -ne 0 ] && erroDetect
 		
-		echo "Importando imagens do zabbix para o MariaDB..."
-		mysql zabbix < database/mysql/images.sql
+		echo "Importing zabbix images to MariaDB..."
+		mysql -uroot $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) zabbix < database/mysql/images.sql
 		[ $? -ne 0 ] && erroDetect
 		
-		echo "Importando todos os dados do Zabbix para o MariaDB ..."
-		mysql zabbix < database/mysql/data.sql
-		[ $? -ne 0 ] && erroDetect
+		echo "Importing all Zabbix datas to MariaDB..."
+		mysql -uroot $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) zabbix < database/mysql/data.sql
+		[ $? -ne 0 ] && erroDetect		
 		sleep 1
 		
 		zabbixInstallTag=0
@@ -1277,33 +1310,33 @@ DB_CREATE ()
 	
 			while [ $glpiPWD_SQL1 != $glpiPWD_SQL2 ]
 			do
-				glpiPWD_SQL1=$(whiptail --title "${TITULO}" --passwordbox "Digite a senha do usuário para glpi Banco de dados." --fb 10 60 3>&1 1>&2 2>&3) 
-				glpiPWD_SQL2=$(whiptail --title "${TITULO}" --passwordbox "Confirmar senha senha do usuário glpi..." --fb 10 50 3>&1 1>&2 2>&3)
+				glpiPWD_SQL1=$(whiptail --title "${TITULO}" --backtitle "${BANNER}" --passwordbox "Enter the user's password to glpi Database." --fb 10 60 3>&1 1>&2 2>&3) 
+				glpiPWD_SQL2=$(whiptail --title "${TITULO}" --backtitle "${BANNER}" --passwordbox "Confirm password glpi user password..." --fb 10 50 3>&1 1>&2 2>&3)
 		
 				if [ $glpiPWD_SQL1 != $glpiPWD_SQL2 ]
 				then
-					whiptail --title "${TITULO}" --msgbox "
-						Erro! Senhas informadas não coincidem. Tente novamente.
+					whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "
+						Error! Informed passwords do not match. Try again.
 					" --fb 0 0 0
 				fi
 			done
 	
 		# Criando a base de dados glpi
-		erroDescription="Erro ao manipular o banco de dados MySQL para GLPi"
+		erroDescription="Error handling MySQL to GLPi Database"
 		
-		echo "Criando banco de dados glpi ..."
+		echo "Creating glpi database..."
 		sleep 1
-		mysql -e "create database glpi character set utf8";
+		mysql -u root $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) -e "create database glpi character set utf8";
 		[ $? -ne 0 ] && erroDetect
 		
-		echo "Criando usuário glpi no banco de dados MariaDB..."
+		echo "Creating glpi user at MariaDB Database..."
 		sleep 1
-		mysql -e "create user 'glpi'@'localhost' identified by '$glpiPWD_SQL1'";
+		mysql -u root $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) -e "create user 'glpi'@'localhost' identified by '$glpiPWD_SQL1'";
 		[ $? -ne 0 ] && erroDetect
 		
-		echo "Tornando o usuário glpi o proprietário do banco de dados glpi..."
+		echo "Making glpi user the owner to glpi database..."
 		sleep 1
-		mysql -e "grant all privileges on glpi.* to 'glpi'@'localhost' with grant option";
+		mysql -u root $(if test $rootPWD_SQL ; then echo "-p$rootPWD_SQL"; fi) -e "grant all privileges on glpi.* to 'glpi'@'localhost' with grant option";
 		[ $? -ne 0 ] && erroDetect
 		
 		$glpiInstallTag=0
@@ -1315,65 +1348,80 @@ DB_CREATE ()
 GLPI_INSTALL ()
 {
 
-# Enabling GLPI TAG to On
-glpiInstallTag=1
+	Enabling GLPI TAG to On
+	glpiInstallTag=1
 
-clear 
+	clear 
 
-echo "Instalação do Exec GLPI..."
-sleep 3
+	echo "Exec GLPI Install..."
+	sleep 3
 
 	# GLPi installation process
 	# Downloading GLPI
 	cd /tmp
 	
-	erroDescription="Erro ao baixar o GLPi"
+	erroDescription="Error to download GLPi"
 	wget -qO- $glpiDownloadLink | tar -zxv;
 	mv glpi /var/www/html/
 	[ $? -ne 0 ] && erroDetect
 
 	# Downloading a lot GLPi Plugins
-	erroDescription="Erro ao baixar algum plugin GLPi"
+	erroDescription="Error to download some GLPi plugin"
 	
 	## GLPi Plugins Links
 
 	# Plugin OS
 
 	# Plugin Dashboard
-	glpiPluginDashboard="https://forge.glpi-project.org/attachments/download/2294/GLPI-dashboard_plugin-0.9.8.zip"
+	glpiPluginDashboard="https://forge.glpi-project.org/attachments/download/2257/GLPI-dashboard_plugin-0.9.4.zip"
 	wget -qO- $glpiPluginDashboard | bsdtar -xvf-;
 	mv dashboard  $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
 
 	# Plugin Mydashboard
-	glpiPluginMydashboard="https://github.com/InfotelGLPI/mydashboard/releases/download/1.7.7/glpi-mydashboard-1.7.7.tar.gz"
+	glpiPluginMydashboard="https://github.com/InfotelGLPI/mydashboard/releases/download/1.6.2/glpi-mydashboard.1.6.2.tar.gz"
 	wget -qO- $glpiPluginMydashboard | tar -zxv;
 	mv mydashboard $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
 
 	# Apps structure inventory
-	glpiPluginAppStructureInventory="https://github.com/ericferon/glpi-archisw/archive/v2.1.4.zip"
+	glpiPluginAppStructureInventory="https://github.com/ericferon/glpi-archisw/archive/v2.0.12.zip"
 	wget -qO- $glpiPluginAppStructureInventory | bsdtar -xvf-;
-	mv glpi-archisw-2.1.4 $GLPI_PLUGINS_DIR/archisw; [ $? -ne 0 ] && erroDetect
+	mv glpi-archisw-2.0.12 $GLPI_PLUGINS_DIR/archisw; [ $? -ne 0 ] && erroDetect
 
 	# Plugin Form Creator
-	glpiPluginFormcreator="https://github.com/pluginsGLPI/formcreator/releases/download/v2.9.1/glpi-formcreator-2.9.1.tar.bz2"
+	glpiPluginFormcreator="https://github.com/pluginsGLPI/formcreator/releases/download/v2.6.5/glpi-formcreator-2.6.5.tar.bz2"
 	wget -qO- $glpiPluginFormcreator | tar -jxv; 
 	mv formcreator $GLPI_PLUGINS_DIR;
 
 	# Plugin Fusion
-	glpiPluginFusionInventory="https://github.com/fusioninventory/fusioninventory-for-glpi/archive/glpi9.4+2.4.tar.gz"
+	glpiPluginFusionInventory="https://github.com/fusioninventory/fusioninventory-for-glpi/releases/download/glpi9.3%2B1.2/fusioninventory-9.3+1.2.tar.gz"
 	wget -qO- $glpiPluginFusionInventory | tar -zxv;
-	mv fusioninventory-for-glpi-glpi9.4-2.4 $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
+	mv fusioninventory $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
 
 	# Plugin Behavior
-	glpiPluginBehaviors="https://forge.glpi-project.org/attachments/download/2296/glpi-behaviors-2.2.2.tar.gz"
+	glpiPluginBehaviors="https://forge.glpi-project.org/attachments/download/2251/glpi-behaviors-2.1.1.tar.gz"
 	wget -qO- $glpiPluginBehaviors | tar -zxv;
 	mv behaviors $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
+
+	# Plugin Database Inventory
+	glpiPluginDatabasesinventory="https://github.com/InfotelGLPI/databases/releases/download/2.1.1/glpi-databases-2.1.1.tar.gz"
+	wget -qO- $glpiPluginDatabasesinventory | tar -zxv;
+	mv databases $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
+
+	# Plugin Appliances Inventory
+	glpiPluginAppliancesinventory="https://forge.glpi-project.org/attachments/download/2259/glpi-appliances-2.4.1.tar.gz"
+	wget -qO- $glpiPluginAppliancesinventory | tar -zxv;
+	mv appliances $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
+
+	# Plugin Webapplications Inventory
+	glpiPluginWebapplicationsinventory="https://github.com/InfotelGLPI/webapplications/releases/download/2.5.1/glpi-webapplications-2.5.1.tar.gz"
+	wget -qO- $glpiPluginWebapplicationsinventory | tar -zxv;
+	mv webapplications $GLPI_PLUGINS_DIR; [ $? -ne 0 ] && erroDetect
 
 
 	chmod 775 /var/www/html/glpi -Rf
 	
 	case $ID in
-		ubuntu)
+		debian)
 			
 			chown www-data:www-data /var/www/html/glpi -Rf
 			echo -e "<Directory \"/var/www/html/glpi\">\n\tAllowOverride All\n</Directory>" > /etc/apache2/conf-available/glpi.conf
@@ -1390,6 +1438,15 @@ sleep 3
 			chown apache:apache /var/www/html/glpi -Rf
 			systemctl restart httpd.service
 		;;
+
+		ubuntu)
+
+			chown www-data:www-data /var/www/html/glpi -Rf
+			echo -e "<Directory \"/var/www/html/glpi\">\n\tAllowOverride All\n</Directory>" > /etc/apache2/conf-available/glpi.conf
+			a2enconf glpi.conf
+			systemctl reload apache2
+
+		;;		
 		
 	esac
 
@@ -1416,14 +1473,14 @@ INTEGRA ()
 	
 	# Install integraGZ
 	
-	echo "Detectando o diretório externalScripts..."
+	echo "Detecting externalScripts directory..."
 	externalScriptsDir=$(find / -iname externalscripts)
 	echo "ok..."
-	echo "Detectando o diretório de front-end..."
+	echo "Detecting frontend directory..."
 	zabbixFrontend=$(find / -name zabbix.php | sed 's/zabbix.php//')
 	echo "ok..."
 	
-	echo "Fazendo integração de sistemas com o Verdanatech iGZ.."
+	echo "Making Systems Integration with Verdanatech iGZ..."
 	sleep 1
 	
 	git clone $verdanatechGIT
@@ -1462,20 +1519,21 @@ INTEGRA ()
 MAIN_MENU ()
 {
  
-	menu01Option=$(whiptail --title "${TITULO}" --menu "Selecione uma opção!" --fb 15 50 6 \
-	"1" "Verdanatech iGZ (Instalação Completa)" \
-	"2" "GLPI e plugins" \
+	menu01Option=$(whiptail --title "${TITULO}" --backtitle "${BANNER}" --menu "Select a option!" --fb 15 50 6 \
+	"1" "Verdanatech iGZ (complete installation)" \
+	"2" "GLPI and plugins" \
 	"3" "Zabbix + Verdanatech iGZ" \
-	"4" "Somente Verdanatech iGZ" \
-	"5" "Sobre" \
-	"6" "Sair" 3>&1 1>&2 2>&3)
+	"4" "Only Verdanatech iGZ" \
+	"5" "About" \
+	"6" "Exit" 3>&1 1>&2 2>&3)
  
 	status=$?
 
 	if [ $status != 0 ]; 
 	then
 	
-		echo "Você selecionou sair. Tchau!"
+		echo "You have selected out. Bye!"
+		echo "Verdanatech Solucoes em TI..."
 		sleep 2
 		exit;
 
@@ -1488,14 +1546,14 @@ ABOUT ()
 
 	clear
 
-	whiptail --title "${TITULO}" --msgbox "$versionDate\nLicence:\n- GPL v3 <http://www.gnu.org/licenses/>\n "  --fb 0 0 0
+	whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "Copyright:\n- Verdanatech Solucoes em TI, $versionDate\nLicence:\n- GPL v3 <http://www.gnu.org/licenses/>\nProject partners:\n- Gustavo Soares <slot.mg@gmail.com>\n- Halexsandro Sales <halexsandro@gmail.com>\n- Janssen Lima <janssenreislima@gmail.com>\n "  --fb 0 0 0
 }
 
 INFORMATION () 
 {
 
-	whiptail --title "${TITULO}" --msgbox " 
-		Este script visa executar os sistemas automatizados de instalação:
+	whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox " 
+		This script aims to perform the installation automated systems:
 		- $glpiVersion  [http://glpi-project.com]
 		  -- With a lot community plugins
 		- $zabbixVersion   [http://zabbix.com]
@@ -1509,10 +1567,15 @@ END_MSG ()
 {
 	clear
 	
-	whiptail --title "${TITULO}" --msgbox "
+	whiptail --title "${TITULO}" --backtitle "${BANNER}" --msgbox "
 
-		CAMINHOS: 
-		Se você fez instalações, tente acessar 
+		Copyright:
+		- Verdanatech Solucoes em TI, $versionDate
+		Thank you for using our script. We are at your disposal to contact.
+		$devMail
+
+		PATHS: 
+		If you made installations, try to access 
 		GLPI, http://$serverAddress/glpi
 		Zabbix, try http://$serverAddress/zabbix
 		iGZ conf, zabbix menu Administration > Verdanatech iGZ 
@@ -1529,7 +1592,7 @@ clear
 
 cd /tmp
 
-echo -e "\n ------------------------------------------------------------ \n|  \033[31mintegraGZ.sh\033[0m - \033[32m$glpiVersion  e muitos plugins $zabbixVersion\033[0m  | \n ------------------------------------------------------------\n"
+echo -e " ------------------------------------------------ _   _   _ \n ----------------------------------------------- / \\ / \\ / \\ \n ---------------------------------------------- ( \033[31mi\033[0m | \033[32mG\033[0m | \033[32mZ\033[0m ) \n ----------------------------------------------- \\_/ \\_/ \\_/ \n| __      __          _                   _            _\n| \\ \\    / /         | |                 | |          | | \n|  \\ \\  / ___ _ __ __| | __ _ _ __   __ _| |_ ___  ___| |__ \n|   \\ \\/ / _ | '__/ _\` |/ _\` | '_ \\ / _\` | __/ _ \\/ __| '_ \\ \n|    \\  |  __| | | (_| | (_| | | | | (_| | ||  __| (__| | | | \n|     \\/ \\___|_|  \\__,_|\\__,_|_| |_|\\__,_|\\__\\___|\\___|_| |_| \n| \n|                    consulting, training and implementation \n|                                  comercial@verdanatech.com \n|                                        www.verdanatech.com \n|                                          \033[1m+55 81 3091 42 52\033[0m \n ------------------------------------------------------------ \n| \033[31mintegraGZ.sh\033[0m  - \033[32m$glpiVersion and a many plugins + $zabbixVersion\033[0m| \n ----------------------------------------------------------- \n"
 
 sleep 5
 
@@ -1537,7 +1600,7 @@ clear
 
 # Verify whiptail
 
-[ ! -e /bin/whiptail ] && { erroDescription='ERRO! Não encontrado WHIPTAIL PKG'; erroDetect ; }
+[ ! -e /bin/whiptail ] && { erroDescription='ERRO! Not found WHIPTAIL PKG'; erroDetect ; }
 
 # Openning Main Menu
 
